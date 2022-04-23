@@ -534,6 +534,9 @@ Names that aren't in bindings are left untouched.
     @function
     @params(UNLIMITED)
     def tl_add(self, *args):
+        if len(args) == 1 and isinstance(args[0], list):
+            # Given a single list argument, sum the list
+            args = args[0]
         result = 0
         for arg in args:
             if isinstance(arg, int):
@@ -571,6 +574,9 @@ Names that aren't in bindings are left untouched.
     @function
     @params(UNLIMITED)
     def tl_mul(self, *args):
+        if len(args) == 1 and isinstance(args[0], list):
+            # Given a single list argument, take the product of the list
+            args = args[0]
         result = 1
         for arg in args:
             if isinstance(arg, int):
@@ -703,7 +709,7 @@ Names that aren't in bindings are left untouched.
     def tl_def(self, name, value):
         if isinstance(name, Symbol):
             if name in self.global_scope:
-                cfg.warn("name", name, "already in use")
+                cfg.error("name", name, "already in use")
                 return nil
             else:
                 self.global_scope[name] = self.evaluate(value)
