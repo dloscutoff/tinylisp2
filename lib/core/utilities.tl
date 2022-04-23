@@ -4,29 +4,29 @@
 
 (def macro
   (q
-    (($params $expr)
-      (q ($params $expr)))))
+    ((&params &expr)
+      (q (&params &expr)))))
 
 (def lambda
-  (macro ($params $expr)
+  (macro (&params &expr)
     (cons (locals)
-      (q ($params $expr)))))
+      (q (&params &expr)))))
 
 (def let
-  (macro ($name $val $expr)
-    ((lambda ($name) $expr)
-      $val)))
+  (macro (&name &val &expr)
+    ((lambda (&name) &expr)
+      &val)))
 
 (def list
   (lambda args args))
 
 (def quote
-  (macro ($expr)
-    (q ((q q) $expr))))
+  (macro (&expr)
+    (q ((q q) &expr))))
 
 (def disp
-  (macro ($expr)
-    (write (unparse $expr) nl)))
+  (macro (&expr)
+    (write (unparse &expr) nl)))
 
 (def to-string
   (lambda (val)
@@ -40,34 +40,35 @@
       ""
       nil)))
 
-(def dec (macro ($num) (- $num 1)))
-(def inc (macro ($num) (+ $num 1)))
+(def dec (macro (&num) (- &num 1)))
+(def inc (macro (&num) (+ &num 1)))
 
-(def nil? (macro ($val) (= $val nil)))
-(def empty-string? (macro ($val) (= $val "")))
-(def zero? (macro ($val) (= $val 0)))
-(def pos? (macro ($num) (< 0 $num)))
-(def neg? (macro ($num) (< $num 0)))
-(def even? (macro ($num) (= 0 (mod $num 2))))
-(def odd? (macro ($num) (= 1 (mod $num 2))))
+(def nil? (macro (&val) (= &val nil)))
+(def empty-string? (macro (&val) (= &val "")))
+(def zero? (macro (&val) (= &val 0)))
+(def pos? (macro (&num) (< 0 &num)))
+(def neg? (macro (&num) (< &num 0)))
+(def even? (macro (&num) (= 0 (mod &num 2))))
+(def odd? (macro (&num) (= 1 (mod &num 2))))
 
-(def htail (macro ($ls) (head (tail $ls))))
-(def ttail (macro ($ls) (tail (tail $ls))))
+(def htail (macro (&seq) (head (tail &seq))))
+(def ttail (macro (&seq) (tail (tail &seq))))
 
-(def not (macro ($val) (if $val 0 1)))
+(def id (macro (&val) &val))
+(def not (macro (&val) (if &val 0 1)))
 
 (def both
-  (macro ($cond1 $cond2)
-    (if $cond1
-      (if $cond2 1 0)
+  (macro (&cond1 &cond2)
+    (if &cond1
+      (if &cond2 1 0)
       0)))
 
 (def either
-  (lambda ($cond1 $cond2)
-    (if $cond1
+  (lambda (&cond1 &cond2)
+    (if &cond1
       1
-      (if $cond2 1 0))))
+      (if &cond2 1 0))))
 
 (def neither
-  (macro ($cond1 $cond2)
-    (not (either $cond1 $cond2))))
+  (macro (&cond1 &cond2)
+    (not (either &cond1 &cond2))))

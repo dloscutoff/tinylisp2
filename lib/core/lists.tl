@@ -2,89 +2,84 @@
 (load utilities)
 
 (def length
-  (lambda (ls (accum 0))
-    (if ls
-      (length (tail ls) (inc accum))
+  (lambda (seq (accum 0))
+    (if seq
+      (length (tail seq) (inc accum))
       accum)))
 
 (def nth
-  (lambda (ls index)
+  (lambda (seq index)
     (if (same-type? index 0)
       (if (< index 0)
         nil
         (if index
-          (nth (tail ls) (dec index))
-          (head ls)))
+          (nth (tail seq) (dec index))
+          (head seq)))
       nil)))
 
-(def _reverse
-  (lambda (ls accum)
-    (if ls
-      (_reverse
-        (tail ls)
-        (cons (head ls) accum))
+(def reverse-onto
+  (lambda (seq accum)
+    (if seq
+      (reverse-onto
+        (tail seq)
+        (cons (head seq) accum))
       accum)))
 
 (def reverse
-  (lambda (ls)
-    (_reverse ls (empty ls))))
+  (lambda (seq)
+    (reverse-onto seq (empty seq))))
 
 (def concat
-  (lambda (ls-front ls-back)
-    (_reverse (reverse ls-front) ls-back)))
+  (lambda (seq-front seq-back)
+    (reverse-onto (reverse seq-front) seq-back)))
 
 (def take
-  (lambda (count ls (accum))
-    (if (both ls (< 0 count))
+  (lambda (count seq (accum))
+    (if (both seq (< 0 count))
       (take
         (dec count)
-        (tail ls)
-        (cons (head ls) accum))
-      (_reverse accum (empty ls)))))
+        (tail seq)
+        (cons (head seq) accum))
+      (reverse-onto accum (empty seq)))))
 
 (def drop
-  (lambda (count ls)
-    (if (both ls (< 0 count))
-      (drop (dec count) (tail ls))
-      ls)))
+  (lambda (count seq)
+    (if (both seq (< 0 count))
+      (drop (dec count) (tail seq))
+      seq)))
+
+(def insert-end
+  (lambda (seq val)
+    (concat seq
+      (cons val (empty seq)))))
 
 (def contains?
-  (lambda (ls item)
-    (if ls
-      (if (= (head ls) item)
+  (lambda (seq item)
+    (if seq
+      (if (= (head seq) item)
         1
-        (contains? (tail ls) item))
+        (contains? (tail seq) item))
       0)))
 
 (def first-index
-  (lambda (ls item (index 0))
-    (if ls
-      (if (= (head ls) item)
+  (lambda (seq item (index 0))
+    (if seq
+      (if (= (head seq) item)
         index
-        (first-index (tail ls) item (inc index)))
+        (first-index (tail seq) item (inc index)))
       nil)))
 
 (def last-index
-  (lambda (ls item (index 0) (final-index))
-    (if ls
+  (lambda (seq item (index 0) (final-index))
+    (if seq
       (last-index
-        (tail ls)
+        (tail seq)
         item
         (inc index)
-        (if (= (head ls) item)
+        (if (= (head seq) item)
           index
           final-index))
       final-index)))
-
-(def quote-each
-  (lambda (ls (accum))
-    (if ls
-      (quote-each
-        (tail ls)
-        (cons
-          (list (q q) (head ls))
-          accum))
-      (reverse accum))))
 
 (def count-up
   (lambda (lower upper (accum))
@@ -99,20 +94,20 @@
       (count-down upper (inc lower) (cons lower accum)))))
 
 (def 0to
-  (macro ($num)
-    (count-up 0 $num)))
+  (macro (&num)
+    (count-up 0 &num)))
 
 (def 1to
-  (macro ($num)
-    (count-up 1 $num)))
+  (macro (&num)
+    (count-up 1 &num)))
 
 (def to0
-  (macro ($num)
-    (count-down $num 0)))
+  (macro (&num)
+    (count-down &num 0)))
 
 (def to1
-  (macro ($num)
-    (count-down $num 1)))
+  (macro (&num)
+    (count-down &num 1)))
 
 (def range
   (lambda (num1 (num2))
