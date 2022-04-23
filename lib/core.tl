@@ -1,6 +1,7 @@
 
 (load core/utilities)
 (load core/lists)
+(load core/metafunctions)
 
 (def tinylisp
   (lambda ((version 1))
