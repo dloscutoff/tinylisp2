@@ -23,6 +23,8 @@
 (def # length)
 (def ~ reverse)
 (def , concat)
+(def ] take)
+(def [ drop)
 (def } foldl)
 (def { foldr)
 (def . compose)
