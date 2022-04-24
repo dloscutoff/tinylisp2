@@ -219,7 +219,7 @@ class Program:
                         try:
                             environment, param_names, body = head
                         except ValueError:
-                            cfg.error("list callable as function must have "
+                            cfg.error("List callable as function must have "
                                       "3 elements, not",
                                       len(head))
                             return nil
@@ -334,7 +334,7 @@ arguments, raise TypeError.
                         default_value = nil
                     else:
                         cfg.error("default parameter must be given as a "
-                                  "list of either one or two elements")
+                                  "List of either one or two elements")
                         raise TypeError
                 else:
                     default_value = None
@@ -354,7 +354,7 @@ arguments, raise TypeError.
                     name_count += 1
                     val_count += 1
                 else:
-                    cfg.error("parameter list must contain symbols, not", name)
+                    cfg.error("parameter list must contain Symbols, not", name)
                     raise TypeError
             if name_count != val_count:
                 # Wrong number of arguments
@@ -368,7 +368,7 @@ arguments, raise TypeError.
                 cfg.warn("parameter name shadows global name", arglist_name)
             new_scope[arglist_name] = arglist
         else:
-            cfg.error("parameters must either be symbol or list of symbols, "
+            cfg.error("parameters must either be Symbol or List of Symbols, "
                       "not", param_names)
             raise TypeError
         return new_scope
@@ -490,10 +490,10 @@ Names that aren't in bindings are left untouched.
             if isinstance(head, int):
                 return chr(head) + tail
             else:
-                cfg.error("cannot cons", cfg.tl_type(head), "to string")
+                cfg.error("cannot cons", cfg.tl_type(head), "to String")
                 return nil
         else:
-            cfg.error("second argument of cons must be list or string, not",
+            cfg.error("second argument of cons must be List or String, not",
                       cfg.tl_type(tail))
             return nil
 
