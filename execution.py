@@ -44,11 +44,6 @@ builtins = {
     "tl_quit": "quit",
     }
 
-# These are functions and macros that should not output their return
-# values when called at the top level (except in repl mode)
-
-top_level_quiet_fns = ["tl_def", "tl_print", "tl_load", "tl_comment"]
-
 
 # Decorators for member functions that implement builtins
 
@@ -56,6 +51,8 @@ def macro(pyfunc):
     """Mark this builtin as a macro."""
     pyfunc.is_macro = True
     pyfunc.name = pyfunc.__name__
+    if not hasattr(pyfunc, "is_quiet"):
+        pyfunc.is_quiet = False
     if not hasattr(pyfunc, "top_level_only"):
         pyfunc.top_level_only = False
     if not hasattr(pyfunc, "repl_only"):
@@ -67,10 +64,18 @@ def function(pyfunc):
     """Mark this builtin as a function."""
     pyfunc.is_macro = False
     pyfunc.name = pyfunc.__name__
+    if not hasattr(pyfunc, "is_quiet"):
+        pyfunc.is_quiet = False
     if not hasattr(pyfunc, "top_level_only"):
         pyfunc.top_level_only = False
     if not hasattr(pyfunc, "repl_only"):
         pyfunc.repl_only = False
+    return pyfunc
+
+
+def quiet(pyfunc):
+    """This builtin's return value is only displayed in REPL mode."""
+    pyfunc.is_quiet = True
     return pyfunc
 
 
@@ -176,14 +181,27 @@ class Program:
                                       f"str, not {type(code)}")
     
     def execute_expression(self, expr):
-        """Evaluate an expression; display it if in repl mode."""
+        """Evaluate an expression and (usually) display the result.
+
+Output is suppressed if running in full-program mode (not REPL)
+and the expression is a call to a builtin with the @quiet decorator.
+"""
+        # Figure out whether the outermost call is to a builtin whose
+        # output needs to be suppressed
+        suppress_output = False
+        # This test isn't perfectly accurate, but it's close enough
+        # in most cases, and it's better than evaluating the head
+        # of the expression twice
+        if (not self.is_repl and isinstance(expr, list)
+                and expr != [] and isinstance(expr[0], Symbol)):
+            try:
+                outer_function = self.lookup_name(expr[0])
+            except NameError:
+                pass
+            else:
+                suppress_output = outer_function.is_quiet
         result = self.evaluate(expr, top_level=True)
-        if self.is_repl:
-            # If running in repl mode, display the result
-            self.display(result)
-        else:
-            # If running in full-program mode, display the result
-            # TODO: unless the outer function is a top-level quiet function
+        if not suppress_output:
             self.display(result)
         return result
 
@@ -711,6 +729,7 @@ Names that aren't in bindings are left untouched.
         return result
 
     @function
+    @quiet
     @params(UNLIMITED)
     def tl_write(self, *vals):
         for val in vals:
@@ -734,6 +753,7 @@ Names that aren't in bindings are left untouched.
         raise NotImplementedError("tl_eval should not be called directly")
 
     @macro
+    @quiet
     @top_level_only
     @params(2)
     def tl_def(self, name, value):
@@ -760,6 +780,7 @@ Names that aren't in bindings are left untouched.
         return expr
 
     @macro
+    @quiet
     @top_level_only
     @params(1)
     def tl_load(self, module):
@@ -795,20 +816,18 @@ Names that aren't in bindings are left untouched.
                 self.inform("Loaded", module)
         else:
             self.inform("Already loaded", module)
-        return nil
 
     @macro
     @top_level_only
     @params(UNLIMITED)
     def tl_comment(self, *args):
-        return nil
+        pass
 
     @macro
     @repl_only
     @params(0)
     def tl_help(self):
         self.inform("Help text TODO")
-        return nil
 
     @macro
     @repl_only
@@ -816,7 +835,6 @@ Names that aren't in bindings are left untouched.
     def tl_restart(self):
         self.inform("Restarting...")
         self.__init__(is_repl=self.is_repl)
-        return nil
 
     @macro
     @repl_only
