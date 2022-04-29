@@ -3,11 +3,11 @@ import cfg
 from execution import Program
 
 
-def repl(environment=None):
+def repl(environment=None, options=None):
     print("(tinylisp 2)")
     print("Type (help) for information")
     if environment is None:
-        environment = Program(is_repl=True)
+        environment = Program(is_repl=True, options=options)
     instruction = input_instruction()
     while True:
         try:

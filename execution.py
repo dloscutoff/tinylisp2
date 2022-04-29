@@ -95,7 +95,7 @@ def params(min_param_count, max_param_count=None):
 
 
 class Program:
-    def __init__(self, is_repl=False, debug_mode=False):
+    def __init__(self, is_repl=False, debug_mode=False, options=None):
         self.is_repl = is_repl
         self.debug_mode = debug_mode
         self.modules = []
@@ -109,9 +109,20 @@ class Program:
             builtin = getattr(self, func_name)
             self.builtins.append(builtin)
             self.global_scope[Symbol(tl_func_name)] = builtin
-        # Load the standard library
-        # TODO: Split into core and short-names
-        self.tl_load("lib/core")
+        if options is not None:
+            # Load the core library and short names according to
+            # the user-specified options
+            if not options.no_library:
+                self.tl_load("lib/core")
+            if not options.no_short_names:
+                self.tl_load("lib/short-builtins")
+            if not options.no_library and not options.no_short_names:
+                self.tl_load("lib/short-names")
+        else:
+            # By default, load the library and short names
+            self.tl_load("lib/core")
+            self.tl_load("lib/short-builtins")
+            self.tl_load("lib/short-names")
 
     @property
     def current_scope(self):
