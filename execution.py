@@ -49,10 +49,6 @@ builtins = {
 
 top_level_quiet_fns = ["tl_def", "tl_print", "tl_load", "tl_comment"]
 
-# These are macros that can only be called at top level in the repl
-
-repl_macros = ["tl_help", "tl_restart", "tl_quit"]
-
 
 # Decorators for member functions that implement builtins
 
@@ -62,6 +58,8 @@ def macro(pyfunc):
     pyfunc.name = pyfunc.__name__
     if not hasattr(pyfunc, "top_level_only"):
         pyfunc.top_level_only = False
+    if not hasattr(pyfunc, "repl_only"):
+        pyfunc.repl_only = False
     return pyfunc
 
 
@@ -71,10 +69,20 @@ def function(pyfunc):
     pyfunc.name = pyfunc.__name__
     if not hasattr(pyfunc, "top_level_only"):
         pyfunc.top_level_only = False
+    if not hasattr(pyfunc, "repl_only"):
+        pyfunc.repl_only = False
     return pyfunc
 
 
 def top_level_only(pyfunc):
+    """This builtin cannot be called inside a function, only at top level."""
+    pyfunc.top_level_only = True
+    return pyfunc
+
+
+def repl_only(pyfunc):
+    """This builtin can only be called at top level in the REPL."""
+    pyfunc.repl_only = True
     pyfunc.top_level_only = True
     return pyfunc
 
@@ -209,6 +217,9 @@ class Program:
                             cfg.error(builtins[builtin.name],
                                       "can only be called at top level")
                             return nil
+                        elif builtin.repl_only and not self.is_repl:
+                            cfg.error(builtins[builtin.name],
+                                      "can only be used in REPL mode")
                         if builtin.is_macro:
                             # Macros receive their args unevaluated
                             args = tail
@@ -793,14 +804,14 @@ Names that aren't in bindings are left untouched.
         return nil
 
     @macro
-    @top_level_only
+    @repl_only
     @params(0)
     def tl_help(self):
         self.inform("Help text TODO")
         return nil
 
     @macro
-    @top_level_only
+    @repl_only
     @params(0)
     def tl_restart(self):
         self.inform("Restarting...")
@@ -808,7 +819,7 @@ Names that aren't in bindings are left untouched.
         return nil
 
     @macro
-    @top_level_only
+    @repl_only
     @params(0)
     def tl_quit(self):
         raise cfg.UserQuit
