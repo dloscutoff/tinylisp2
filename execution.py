@@ -30,7 +30,6 @@ builtins = {
     "tl_unparse": "unparse",
 #    "tl_parse": "parse",
     "tl_write": "write",
-#    "tl_disp": "disp",
     "tl_locals": "locals",
     "tl_eval": "eval",
     # Macros:
@@ -40,7 +39,7 @@ builtins = {
     "tl_load": "load",
     "tl_comment": "comment",
     # For REPL use:
-#    "tl_help": "help",
+    "tl_help": "help",
     "tl_restart": "restart",
     "tl_quit": "quit",
     }
@@ -49,11 +48,6 @@ builtins = {
 # values when called at the top level (except in repl mode)
 
 top_level_quiet_fns = ["tl_def", "tl_print", "tl_load", "tl_comment"]
-
-# These are macros that cannot be called from other functions or
-# macros, only from the top level
-
-top_level_macros = ["tl_def", "tl_load"]
 
 # These are macros that can only be called at top level in the repl
 
@@ -66,6 +60,8 @@ def macro(pyfunc):
     """Mark this builtin as a macro."""
     pyfunc.is_macro = True
     pyfunc.name = pyfunc.__name__
+    if not hasattr(pyfunc, "top_level_only"):
+        pyfunc.top_level_only = False
     return pyfunc
 
 
@@ -73,6 +69,13 @@ def function(pyfunc):
     """Mark this builtin as a function."""
     pyfunc.is_macro = False
     pyfunc.name = pyfunc.__name__
+    if not hasattr(pyfunc, "top_level_only"):
+        pyfunc.top_level_only = False
+    return pyfunc
+
+
+def top_level_only(pyfunc):
+    pyfunc.top_level_only = True
     return pyfunc
 
 
@@ -177,7 +180,6 @@ class Program:
         return result
 
     def evaluate(self, expr, top_level=False):
-        # TODO: handle the top_level argument
         # TODO: better error handling instead of just returning nil
         bindings = None
         # Loop while the expression represents a call to a user-defined
@@ -203,6 +205,10 @@ class Program:
                     if head in self.builtins:
                         # Call to a builtin function or macro
                         builtin = head
+                        if builtin.top_level_only and not top_level:
+                            cfg.error(builtins[builtin.name],
+                                      "can only be called at top level")
+                            return nil
                         if builtin.is_macro:
                             # Macros receive their args unevaluated
                             args = tail
@@ -245,6 +251,7 @@ class Program:
                             # the error message)
                             return nil
                         expr = body
+                        top_level = False
                         # Loop with the new expression and bindings
                     else:
                         # Trying to call something other than a builtin or
@@ -716,6 +723,7 @@ Names that aren't in bindings are left untouched.
         raise NotImplementedError("tl_eval should not be called directly")
 
     @macro
+    @top_level_only
     @params(2)
     def tl_def(self, name, value):
         if isinstance(name, Symbol):
@@ -741,6 +749,7 @@ Names that aren't in bindings are left untouched.
         return expr
 
     @macro
+    @top_level_only
     @params(1)
     def tl_load(self, module):
         if isinstance(module, Symbol):
@@ -778,11 +787,20 @@ Names that aren't in bindings are left untouched.
         return nil
 
     @macro
+    @top_level_only
     @params(UNLIMITED)
     def tl_comment(self, *args):
         return nil
 
     @macro
+    @top_level_only
+    @params(0)
+    def tl_help(self):
+        self.inform("Help text TODO")
+        return nil
+
+    @macro
+    @top_level_only
     @params(0)
     def tl_restart(self):
         self.inform("Restarting...")
@@ -790,6 +808,7 @@ Names that aren't in bindings are left untouched.
         return nil
 
     @macro
+    @top_level_only
     @params(0)
     def tl_quit(self):
         raise cfg.UserQuit
