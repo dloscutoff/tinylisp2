@@ -53,4 +53,5 @@
 (def >
   (macro &args
     (apply <
-      (reverse (q &args)))))
+      (reverse
+        (map eval (q &args))))))
