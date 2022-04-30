@@ -199,7 +199,8 @@ and the expression is a call to a builtin with the @quiet decorator.
             except NameError:
                 pass
             else:
-                suppress_output = outer_function.is_quiet
+                if cfg.tl_type(outer_function) == "Builtin":
+                    suppress_output = outer_function.is_quiet
         result = self.evaluate(expr, top_level=True)
         if not suppress_output:
             self.display(result)
