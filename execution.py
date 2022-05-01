@@ -7,8 +7,6 @@ from contextlib import contextmanager
 from cfg import nil, Symbol, UNLIMITED
 import cfg
 from parsing import parse
-# TODO:
-#import help_text
 
 
 # Built-in functions and macros
@@ -828,7 +826,7 @@ Names that aren't in bindings are left untouched.
     @repl_only
     @params(0)
     def tl_help(self):
-        self.inform("Help text TODO")
+        self.inform(cfg.HELP_TEXT)
 
     @macro
     @repl_only

@@ -42,9 +42,9 @@ def run_program(code, environment=None, options=None):
 
 def repl(environment=None, options=None):
     print("(tinylisp 2)")
-    print("Type (help) for information")
     if environment is None:
         environment = Program(is_repl=True, options=options)
+    print("Type (help) for information")
     instruction = input_instruction()
     while True:
         try:
