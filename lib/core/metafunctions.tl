@@ -57,18 +57,18 @@
       (drop-while func (tail seq))
       seq)))
 
-(def _foldl
-  (lambda (func seq accum)
+(def foldl
+  (lambda (func seq (accum))
     (if seq
-      (_foldl func
+      (foldl func
         (tail seq)
         (func accum (head seq)))
       accum)))
 
-(def foldl
+(def foldl1
   (lambda (func seq (default))
     (if seq
-      (_foldl func (tail seq) (head seq))
+      (foldl func (tail seq) (head seq))
       default)))
 
 (def _foldr
@@ -80,6 +80,10 @@
     accum)))
 
 (def foldr
+  (lambda (func seq (accum))
+    (_foldr func (reverse seq) accum)))
+
+(def foldr1
   (lambda (func seq (default))
     (if seq
       (let reversed
