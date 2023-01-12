@@ -45,7 +45,7 @@
 
 (def take-while
   (lambda (func seq (accum))
-    (if (both seq (func (head seq)))
+    (if (both? seq (func (head seq)))
       (take-while func
         (tail seq)
         (cons (head seq) accum))
@@ -53,7 +53,7 @@
 
 (def drop-while
   (lambda (func seq)
-    (if (both seq (func (head seq)))
+    (if (both? seq (func (head seq)))
       (drop-while func (tail seq))
       seq)))
 

@@ -1,5 +1,6 @@
 
 (load utilities)
+(load metafunctions)
 
 (def length
   (lambda (seq (accum 0))
@@ -35,7 +36,7 @@
 
 (def take
   (lambda (count seq (accum))
-    (if (both seq (< 0 count))
+    (if (both? seq (< 0 count))
       (take
         (dec count)
         (tail seq)
@@ -44,7 +45,7 @@
 
 (def drop
   (lambda (count seq)
-    (if (both seq (< 0 count))
+    (if (both? seq (< 0 count))
       (drop (dec count) (tail seq))
       seq)))
 
@@ -120,3 +121,34 @@
     (if (< 0 count)
       (repeat val (dec count) (cons val accum))
       accum)))
+
+(def all?
+  (lambda (seq)
+    (if seq
+      (if (head seq)
+        (all? (tail seq))
+        0)
+      1)))
+
+(def any?
+  (lambda (seq)
+    (if seq
+      (if (head seq)
+        1
+        (any? (tail seq)))
+      0)))
+
+(def none?
+  (macro (&seq)
+    (not (any? &seq))))
+
+(def _zip
+  (lambda (seqs (accum))
+    (if (both? seqs (all? seqs))
+      (_zip
+        (map tail seqs)
+        (cons (map head seqs) accum))
+      (reverse accum))))
+
+(def zip
+  (lambda seqs (_zip seqs)))

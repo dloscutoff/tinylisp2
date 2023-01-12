@@ -56,19 +56,20 @@
 
 (def id (macro (&val) &val))
 (def not (macro (&val) (if &val 0 1)))
+(def not? not)
 
-(def both
+(def both?
   (macro (&cond1 &cond2)
     (if &cond1
       (if &cond2 1 0)
       0)))
 
-(def either
+(def either?
   (lambda (&cond1 &cond2)
     (if &cond1
       1
       (if &cond2 1 0))))
 
-(def neither
+(def neither?
   (macro (&cond1 &cond2)
-    (not (either &cond1 &cond2))))
+    (not (either? &cond1 &cond2))))
