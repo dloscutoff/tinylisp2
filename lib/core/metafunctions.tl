@@ -49,7 +49,7 @@
       (take-while func
         (tail seq)
         (cons (head seq) accum))
-      (reverse accum (empty seq)))))
+      (reverse accum))))
 
 (def drop-while
   (lambda (func seq)
