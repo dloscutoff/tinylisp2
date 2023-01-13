@@ -40,6 +40,14 @@
       ""
       nil)))
 
+; Evaluate an expression and do not output its return value
+; Can only be used at top level
+(def quiet
+  (macro (&expr)
+    (if &expr
+      (comment)
+      (comment))))
+
 (def dec (macro (&num) (- &num 1)))
 (def inc (macro (&num) (+ &num 1)))
 
