@@ -107,7 +107,8 @@
       (insert-end
         (q (lambda (_arg)))
         (foldr list
-          (concat (q &functions) (q (_arg))))))))
+          (q &functions)
+          (q _arg))))))
 
 ; Takes a 2-argument function and returns a new function that does the same
 ; thing but takes its arguments in the opposite order
