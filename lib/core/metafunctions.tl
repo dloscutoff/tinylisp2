@@ -17,15 +17,22 @@
     (eval
       (cons (q &func) (quote-each &arglist)))))
 
-(def map
+; Takes a function and a sequence; applies the function to each
+; element of the sequence and returns the results in reverse order
+; This is more efficient than map, which needs an extra reversal step
+(def map-backwards
   (lambda (func seq (accum))
     (if seq
-      (map func
+      (map-backwards func
         (tail seq)
         (cons
           (func (head seq))
           accum))
-      (reverse accum))))
+      accum)))
+
+(def map
+  (macro (&func &seq)
+    (reverse (map-backwards &func &seq))))
 
 (def filter
   (lambda (func seq (accum))

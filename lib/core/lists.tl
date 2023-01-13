@@ -142,12 +142,20 @@
   (macro (&seq)
     (not (any? &seq))))
 
+; Transpose a list of sequences, stopping when one of them becomes empty
+; For efficiency's sake, the algorithm performs a back-and-forth traversal,
+; reversing the result sequences only when necessary
 (def _zip
-  (lambda (seqs (accum))
+  (lambda (seqs (accum) (reversed 0))
     (if (both? seqs (all? seqs))
       (_zip
-        (map tail seqs)
-        (cons (map head seqs) accum))
+        (map-backwards tail seqs)
+        (cons
+          (if reversed
+            (map-backwards head seqs)
+            (map head seqs))
+          accum)
+        (not reversed))
       (reverse accum))))
 
 (def zip
