@@ -5,7 +5,9 @@
 (def l list)
 (def m map)
 (def o odd?)
+(def p partial)
 (def r range)
+(def z zip)
 
 (def \ lambda)
 (def : let)
