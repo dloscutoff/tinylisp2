@@ -73,7 +73,7 @@
       0)))
 
 (def either?
-  (lambda (&cond1 &cond2)
+  (macro (&cond1 &cond2)
     (if &cond1
       1
       (if &cond2 1 0))))
