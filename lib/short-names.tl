@@ -15,8 +15,22 @@
 (def # length)
 (def ~ reverse)
 (def , concat)
-(def ] take)
-(def [ drop)
 (def } foldl)
 (def { foldr)
 (def . compose)
+
+; ] is take if its first argument is an integer, take-while if
+; it is a function (list or builtin)
+(def ]
+  (lambda (count-or-func seq)
+    (if (same-type? count-or-func 0)
+      (take count-or-func seq)
+      (take-while count-or-func seq))))
+
+; [ is drop if its first argument is an integer, drop-while if
+; it is a function (list or builtin)
+(def [
+  (lambda (count-or-func seq)
+    (if (same-type? count-or-func 0)
+      (drop count-or-func seq)
+      (drop-while count-or-func seq))))
