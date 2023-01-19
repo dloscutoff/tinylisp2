@@ -174,3 +174,23 @@
 (def unique
   (lambda (seq)
     (_unique seq (empty seq))))
+
+(def _prefixes
+  (lambda (seq (accum))
+    (if seq
+      (_prefixes
+        (tail seq)
+        (cons (reverse seq) accum))
+      (cons seq accum))))
+
+(def prefixes
+  (macro (&seq)
+    (_prefixes (reverse &seq))))
+
+(def suffixes
+  (lambda (seq (accum))
+    (if seq
+      (suffixes
+        (tail seq)
+        (cons seq accum))
+      (reverse-onto accum (list seq)))))
