@@ -160,3 +160,17 @@
 
 (def zip
   (lambda seqs (_zip seqs)))
+
+(def _unique
+  (lambda (seq accum)
+    (if seq
+      (if (contains? accum (head seq))
+        (_unique (tail seq) accum)
+        (_unique
+          (tail seq)
+          (cons (head seq) accum)))
+      (reverse accum))))
+
+(def unique
+  (lambda (seq)
+    (_unique seq (empty seq))))
