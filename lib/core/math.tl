@@ -27,6 +27,48 @@
 (def square
   (lambda (num) (* num num)))
 
+(def _minimum
+  (lambda (seq current-min)
+    (if seq
+      (_minimum (tail seq)
+        (if (< (head seq) current-min)
+          (head seq)
+          current-min))
+      current-min)))
+
+; Returns the smallest number in a sequence, or nil if the sequence is empty
+(def minimum
+  (lambda (seq)
+    (if seq
+      (_minimum (tail seq) (head seq))
+      nil)))
+
+; Returns the smallest number of its arguments, or nil if there are no
+; arguments
+(def min
+  (lambda nums (minimum nums)))
+
+(def _maximum
+  (lambda (seq current-max)
+    (if seq
+      (_maximum (tail seq)
+        (if (< current-max (head seq))
+          (head seq)
+          current-max))
+      current-max)))
+
+; Returns the largest number in a sequence, or nil if the sequence is empty
+(def maximum
+  (lambda (seq)
+    (if seq
+      (_maximum (tail seq) (head seq))
+      nil)))
+
+; Returns the largest number of its arguments, or nil if there are no
+; arguments
+(def max
+  (lambda nums (maximum nums)))
+
 ; Tests whether <divisor> divides <multiple> evenly
 (def divides?
   (macro (&divisor &multiple)
