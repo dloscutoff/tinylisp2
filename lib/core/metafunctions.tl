@@ -34,6 +34,17 @@
   (macro (&func &seq)
     (reverse (map-backwards &func &seq))))
 
+; Takes a function and any number of sequences; applies the function
+; to corresponding values from each sequence and returns a list of the
+; results, stopping when any of the sequences runs out of values
+(def zip-with
+  (lambda func-and-seqs
+    (let func (head func-and-seqs)
+      (let seqs (tail func-and-seqs)
+        (map
+          (lambda (args) (apply func args))
+          (_zip seqs))))))
+
 (def filter
   (lambda (func seq (accum))
     (if seq
