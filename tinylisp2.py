@@ -6,7 +6,7 @@ import argparse
 import run
 
 
-def parse_args():
+def parse_args(args=None):
     argparser = argparse.ArgumentParser()
     liboptions = argparser.add_mutually_exclusive_group()
     liboptions.add_argument("--no-library",
@@ -21,7 +21,12 @@ def parse_args():
     argparser.add_argument("filename",
                            help="code file to execute",
                            nargs="?")
-    options = argparser.parse_args()
+    if args is not None:
+        # Parse the argument list passed into the function
+        options = argparser.parse_args(args)
+    else:
+        # Parse the actual command-line args
+        options = argparser.parse_args()
     if options.builtins_only:
         options.no_library = True
         options.no_short_names = True
