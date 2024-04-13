@@ -1,4 +1,6 @@
 
+import sys
+
 import cfg
 from execution import Program
 
@@ -29,15 +31,14 @@ def run_program(code, environment=None, options=None):
         environment.execute(code)
     except KeyboardInterrupt:
         cfg.interrupted_error()
-        return
     except RecursionError:
         cfg.recursion_error()
-        return
     except Exception as err:
         # Miscellaneous exception, probably indicates a bug in
         # the interpreter
         cfg.error(err)
-        return
+    finally:
+        sys.stdout.flush()
 
 
 def repl(environment=None, options=None):
