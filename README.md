@@ -13,7 +13,7 @@ A minimalist Lisp dialect and successor to [tinylisp](https://github.com/dloscut
 
 ## Running tinylisp 2
 
-You can run tinylisp 2 in interactive REPL mode at [Replit](https://replit.com/@dloscutoff/tinylisp2).
+You can run tinylisp 2 online at [Do Stuff Online](https://do-stuff-online.github.io/do-stuff-online/#tinylisp2). Enter your program in the Code box and click the play button at the top to run it. Note that DSO runs the interpreter client-side, so it will hang your browser if your code takes a long time to run.
 
 If you `git clone` tinylisp 2 to your computer (requires [Python](https://www.python.org/downloads/) 3.6 or higher), you have two options: run a file, or open the REPL.
 
